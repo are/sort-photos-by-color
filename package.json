@@ -10,9 +10,7 @@
   "author": "Artur Wojciechowski",
   "license": "UNLICENSED",
   "devDependencies": {
-    "parcel": "^2.0.0-beta.1",
-    "postcss": "^8.1.14",
-    "postcss-modules": "^4.0.0"
+    "parcel": "^2.0.0-beta.1"
   },
   "dependencies": {
     "chroma-js": "^2.1.0",

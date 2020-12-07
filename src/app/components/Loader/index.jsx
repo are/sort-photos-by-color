@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { loader } from './Loader.css'
+import './Loader.css'
 
 export const Loader = () => {
-  return <div className={loader}></div>
+  return <div className="loader"></div>
 }

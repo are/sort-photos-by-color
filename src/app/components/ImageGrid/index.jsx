@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { grid } from './ImageGrid.css'
+import './ImageGrid.css'
 
 export const ImageGrid = ({ children }) => {
-  return <div className={grid}>{children}</div>
+  return <div className="grid">{children}</div>
 }
