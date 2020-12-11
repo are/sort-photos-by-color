@@ -31,9 +31,11 @@ const initializeState = async (albumHash) => {
 
   const album = await response.json()
 
+  console.log(album)
+
   return await Promise.all(
     album.data
-      .map((img) => img.link)
+      .map((img) => `https://i.imgur.com/${img.id}m.jpg`)
       .map((src) => {
         return Vibrant.from(src)
           .getPalette()
