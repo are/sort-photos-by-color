@@ -8,6 +8,7 @@ import FlipMove from 'react-flip-move'
 import * as Vibrant from 'node-vibrant/dist/vibrant.worker'
 import chroma from 'chroma-js'
 import { Loader } from './components/Loader'
+import { Input } from './components/Input'
 
 const CLIENT_ID = 'b082be41ba970bd'
 const CLIENT_SECRET = 'e1c2324dd6b4bac3587b1a38d9879a2a6f5abff7'
@@ -48,16 +49,20 @@ const initializeState = async (albumHash) => {
 const getActiveColor = (img) => Object.values(img.palette)[img.activeColor]
 
 export const App = () => {
+  const [inputText, setInputText] = useState('')
+  const [albumId, setAlbumId] = useState(null)
   const [isLoading, setLoading] = useState(false)
   const [state, setState] = useState([])
 
   useEffect(() => {
-    setLoading(true)
-    initializeState('SSUYPd5').then((newState) => {
-      setState(newState)
-      setLoading(false)
-    })
-  }, [])
+    if (albumId !== null) {
+      setLoading(true)
+      initializeState('SSUYPd5').then((newState) => {
+        setState(newState)
+        setLoading(false)
+      })
+    }
+  }, [albumId])
 
   const setActive = useCallback(
     (imageIndex, index) => {
@@ -74,6 +79,30 @@ export const App = () => {
     },
     [setState]
   )
+
+  if (albumId === null) {
+    return (
+      <Container>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Input
+            placeholder="Imgur Album ID"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+          />
+          <Button
+            onClick={() => {
+              if (inputText.trim() !== '') {
+                console.log(inputText.trim())
+                setAlbumId(inputText)
+              }
+            }}
+          >
+            Get the album
+          </Button>
+        </div>
+      </Container>
+    )
+  }
 
   const sortByColor = () => {
     setState((state) => {
