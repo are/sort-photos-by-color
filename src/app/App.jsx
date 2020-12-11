@@ -57,7 +57,7 @@ export const App = () => {
   useEffect(() => {
     if (albumId !== null) {
       setLoading(true)
-      initializeState('SSUYPd5').then((newState) => {
+      initializeState(albumId).then((newState) => {
         setState(newState)
         setLoading(false)
       })
