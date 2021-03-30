@@ -7,8 +7,10 @@
 
   padding: 10px;
   margin-right: 10px;
+
+  outline: none;
 }
 
 .button:active {
-  background: #aaa;
+  background: #ccc;
 }

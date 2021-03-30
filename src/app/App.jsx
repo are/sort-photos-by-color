@@ -3,6 +3,7 @@ import { Container, Header } from './components/Container'
 import { Image } from './components/Image'
 import { ImageGrid } from './components/ImageGrid'
 import { Button } from './components/Button'
+import { Swatch } from './components/Swatch'
 
 import FlipMove from 'react-flip-move'
 import * as Vibrant from 'node-vibrant/dist/vibrant.worker'
@@ -31,8 +32,6 @@ const initializeState = async (albumHash) => {
 
   const album = await response.json()
 
-  console.log(album)
-
   return await Promise.all(
     album.data
       .map((img) => `https://i.imgur.com/${img.id}m.jpg`)
@@ -52,9 +51,12 @@ const getActiveColor = (img) => Object.values(img.palette)[img.activeColor]
 
 export const App = () => {
   const [inputText, setInputText] = useState('')
+  const [isChoosingRef, setChoosingRef] = useState(false)
+  const [refColor, setRefColor] = useState('#FF0000')
   const [albumId, setAlbumId] = useState(null)
   const [isLoading, setLoading] = useState(false)
   const [state, setState] = useState([])
+  const [reverseSort, setReverseSort] = useState(false)
 
   useEffect(() => {
     if (albumId !== null) {
@@ -68,6 +70,17 @@ export const App = () => {
 
   const setActive = useCallback(
     (imageIndex, index) => {
+      if (isChoosingRef) {
+        const color = Object.values(state[imageIndex].palette)[index]
+
+        const [r, g, b] = color.getRgb()
+
+        setChoosingRef(false)
+        setRefColor(`rgb(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)})`)
+
+        return
+      }
+
       setState((state) => {
         const newState = [...state]
 
@@ -79,8 +92,12 @@ export const App = () => {
         return newState
       })
     },
-    [setState]
+    [state, setState, isChoosingRef]
   )
+
+  const setRef = useCallback(() => {
+    setChoosingRef((value) => !value)
+  }, [setChoosingRef])
 
   if (albumId === null) {
     return (
@@ -94,7 +111,6 @@ export const App = () => {
           <Button
             onClick={() => {
               if (inputText.trim() !== '') {
-                console.log(inputText.trim())
                 setAlbumId(inputText)
               }
             }}
@@ -114,10 +130,10 @@ export const App = () => {
         const color1 = chroma(getActiveColor(img1).getRgb())
         const color2 = chroma(getActiveColor(img2).getRgb())
 
-        const result1 = chroma.deltaE(color1, '#FF0000', 0.5, 2)
-        const result2 = chroma.deltaE(color2, '#FF0000', 0.5, 2)
+        const result1 = chroma.deltaE(color1, refColor, 0.5, 2)
+        const result2 = chroma.deltaE(color2, refColor, 0.5, 2)
 
-        return result2 - result1
+        return reverseSort ? result1 - result2 : result2 - result1
       })
 
       return newState
@@ -128,9 +144,21 @@ export const App = () => {
     <Container>
       <Header>
         <h1>Sort Images By Color</h1>
-        <div>
-          <Button onClick={() => setState(shuffle(state))}>Shuffle</Button>
-          <Button onClick={() => sortByColor()}>Sort By Color</Button>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div>
+            <Button onClick={() => setState(shuffle(state))}>Shuffle</Button>
+            <Button onClick={() => sortByColor()}>Sort By Color</Button>
+          </div>
+
+          <Swatch color={refColor} onClick={setRef} active={isChoosingRef}>
+            Reference color:
+          </Swatch>
+          <Swatch
+            onClick={() => setReverseSort((value) => !value)}
+            value={reverseSort ? '<' : '>'}
+          >
+            Order:
+          </Swatch>
         </div>
       </Header>
 

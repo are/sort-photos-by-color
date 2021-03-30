@@ -12,6 +12,7 @@ export const Image = forwardRef(
         <div className="colorBoxContainer">
           {Object.values(palette).map((color, i) => (
             <div
+              title={Object.keys(palette)[i]}
               key={color.getRgb()}
               className={`colorBox ${i === activeColor ? 'activeBox' : ''}`}
               style={{ backgroundColor: toStringColor(color.getRgb()) }}
